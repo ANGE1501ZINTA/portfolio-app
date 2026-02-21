@@ -7,651 +7,143 @@
 <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #05080d;
-  --surface: #0b1017;
-  --card: #0f1923;
-  --border: #1a2535;
-  --border-hover: #2a3f5f;
-  --cyan: #00d4ff;
-  --orange: #ff6b35;
-  --green: #00e676;
-  --text: #dce8f5;
-  --muted: #5a7a99;
-  --muted2: #3d5570;
-}
-
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Cabinet Grotesk', sans-serif;
-  overflow-x: hidden;
-  cursor: none;
-}
-
-/* ── CURSOR ── */
-#cur {
-  width: 8px; height: 8px;
-  background: var(--cyan);
-  border-radius: 50%;
-  position: fixed; pointer-events: none; z-index: 9999;
-  transition: transform .15s, background .2s;
-  box-shadow: 0 0 12px var(--cyan);
-}
-#cur-ring {
-  width: 32px; height: 32px;
-  border: 1px solid rgba(0,212,255,.35);
-  border-radius: 50%;
-  position: fixed; pointer-events: none; z-index: 9998;
-  transition: opacity .3s;
-}
-a:hover ~ #cur, button:hover ~ #cur { transform: scale(3); }
-
-/* ── NOISE OVERLAY ── */
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 0; opacity: .4;
-}
-
-/* ── GRID BG ── */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background:
-    linear-gradient(rgba(0,212,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,.025) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none; z-index: 0;
-}
-
-/* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1.1rem 3rem;
-  background: rgba(5,8,13,.85);
-  backdrop-filter: blur(24px);
-  border-bottom: 1px solid var(--border);
-}
-.nav-brand {
-  font-family: 'Fira Code', monospace;
-  font-size: .8rem;
-  color: var(--cyan);
-  letter-spacing: .08em;
-}
-.nav-brand span { color: var(--muted); }
-.nav-links { display: flex; gap: 2rem; list-style: none; }
-.nav-links a {
-  font-family: 'Fira Code', monospace;
-  font-size: .72rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color .2s;
-}
-.nav-links a:hover { color: var(--cyan); }
-.nav-dot {
-  width: 7px; height: 7px;
-  background: var(--green);
-  border-radius: 50%;
-  box-shadow: 0 0 8px var(--green);
-  animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-
-/* ── HERO ── */
-#hero {
-  min-height: 100vh;
-  display: flex; align-items: center;
-  padding: 8rem 3rem 4rem;
-  position: relative; z-index: 1;
-}
-.hero-glow {
-  position: absolute;
-  width: 700px; height: 700px;
-  background: radial-gradient(circle, rgba(0,212,255,.07) 0%, transparent 65%);
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  pointer-events: none;
-}
-
-.hero-layout {
-  max-width: 1100px; margin: 0 auto; width: 100%;
-  display: grid; grid-template-columns: 1fr auto;
-  align-items: center; gap: 4rem;
-}
-
-.hero-tag {
-  font-family: 'Fira Code', monospace;
-  font-size: .72rem;
-  color: var(--cyan);
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  display: flex; align-items: center; gap: .7rem;
-  margin-bottom: 1.8rem;
-}
-.hero-tag::before { content: ''; width: 28px; height: 1px; background: var(--cyan); }
-
-.hero-name {
-  font-family: 'Clash Display', sans-serif;
-  font-size: clamp(3.5rem, 8vw, 7rem);
-  font-weight: 700;
-  line-height: .95;
-  letter-spacing: -.03em;
-  margin-bottom: 1rem;
-}
-.hero-name .line2 {
-  background: linear-gradient(135deg, var(--cyan) 0%, #0099cc 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.hero-role {
-  font-size: 1rem;
-  color: var(--muted);
-  margin-bottom: 2.5rem;
-  line-height: 1.7;
-  max-width: 480px;
-  font-weight: 300;
-}
-.hero-role strong { color: var(--text); font-weight: 500; }
-
-.hero-cta {
-  display: inline-flex; align-items: center; gap: .6rem;
-  padding: .9rem 2rem;
-  background: transparent;
-  border: 1px solid var(--cyan);
-  color: var(--cyan);
-  font-family: 'Fira Code', monospace;
-  font-size: .78rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: none;
-  transition: background .2s, color .2s, box-shadow .2s;
-}
-.hero-cta:hover {
-  background: var(--cyan);
-  color: #000;
-  box-shadow: 0 0 30px rgba(0,212,255,.3);
-}
-
-/* Terminal card */
-.terminal {
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 1.5rem;
-  width: 320px;
-  flex-shrink: 0;
-}
-.terminal-bar {
-  display: flex; gap: .4rem; margin-bottom: 1.2rem;
-}
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-.dot.r { background: #ff5f57; }
-.dot.y { background: #febc2e; }
-.dot.g { background: #28c840; }
-
-.terminal-line {
-  font-family: 'Fira Code', monospace;
-  font-size: .75rem;
-  line-height: 1.9;
-  color: var(--muted);
-}
-.terminal-line .prompt { color: var(--cyan); }
-.terminal-line .val { color: var(--green); }
-.terminal-line .key { color: var(--orange); }
-.terminal-line .comment { color: var(--muted2); }
-.blink {
-  display: inline-block;
-  width: 8px; height: 1em;
-  background: var(--cyan);
-  animation: blink .9s step-end infinite;
-  vertical-align: text-bottom;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-/* ── SECTION BASE ── */
-.section {
-  position: relative; z-index: 1;
-  border-top: 1px solid var(--border);
-}
-.inner {
-  max-width: 1100px; margin: 0 auto;
-  padding: 6rem 3rem;
-}
-
-.sec-label {
-  font-family: 'Fira Code', monospace;
-  font-size: .68rem;
-  color: var(--cyan);
-  letter-spacing: .25em;
-  text-transform: uppercase;
-  margin-bottom: .6rem;
-}
-.sec-label::before { content: '// '; color: var(--muted2); }
-
-.sec-title {
-  font-family: 'Clash Display', sans-serif;
-  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-  font-weight: 600;
-  letter-spacing: -.02em;
-  margin-bottom: .8rem;
-}
-.sec-sub {
-  color: var(--muted);
-  font-size: .95rem;
-  font-weight: 300;
-  max-width: 500px;
-  line-height: 1.7;
-  margin-bottom: 3.5rem;
-}
-
-/* ── PROJECTS ── */
-#projects .inner { padding-bottom: 7rem; }
-
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5px;
-  background: var(--border);
-  border: 1px solid var(--border);
-}
-
-.pcard {
-  background: var(--card);
-  padding: 2.5rem;
-  position: relative;
-  overflow: hidden;
-  transition: background .25s;
-  cursor: none;
-}
-.pcard::before {
-  content: '';
-  position: absolute; left: 0; top: 0; bottom: 0;
-  width: 2px;
-  background: linear-gradient(180deg, var(--cyan), transparent);
-  transform: scaleY(0); transform-origin: top;
-  transition: transform .35s;
-}
-.pcard:hover { background: #121e2b; }
-.pcard:hover::before { transform: scaleY(1); }
-
-.pcard-top {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  margin-bottom: 1.5rem;
-}
-.pcard-num {
-  font-family: 'Fira Code', monospace;
-  font-size: .65rem;
-  color: var(--muted2);
-  letter-spacing: .15em;
-}
-.badge {
-  font-family: 'Fira Code', monospace;
-  font-size: .6rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  padding: .25rem .6rem;
-  border-radius: 2px;
-}
-.badge-live { background: rgba(0,230,118,.1); color: var(--green); border: 1px solid rgba(0,230,118,.3); }
-.badge-preview { background: rgba(255,107,53,.1); color: var(--orange); border: 1px solid rgba(255,107,53,.3); }
-.badge-soon { background: rgba(90,122,153,.1); color: var(--muted); border: 1px solid var(--border); }
-.badge-wip { background: rgba(255,107,53,.12); color: var(--orange); border: 1px solid rgba(255,107,53,.4); animation: wip-pulse 2s ease-in-out infinite; }
-@keyframes wip-pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
-
-.wip-bar { margin-bottom: 1.2rem; }
-.wip-label { display: flex; justify-content: space-between; font-family: 'Fira Code', monospace; font-size: .65rem; color: var(--muted); margin-bottom: .4rem; }
-.wip-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
-.wip-fill { height: 100%; background: linear-gradient(90deg, var(--orange), #ffaa00); border-radius: 2px; animation: fillW 1.2s ease forwards; }
-@keyframes fillW { from { width: 0 !important; } }
-
-/* Screenshots Power BI */
-.screenshots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin: 1.2rem 0; }
-.img-slot { position: relative; aspect-ratio: 16/9; overflow: hidden; background: var(--surface); border: 1px solid var(--border-hover); }
-.img-slot img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
-.img-slot:hover img { transform: scale(1.03); }
-.img-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; height: 100%; width: 100%; position: absolute; inset: 0; background: var(--surface); border: 1px dashed var(--border-hover); }
-.img-ph-icon { font-size: 1.4rem; opacity: .4; }
-.img-ph-text { font-family: 'Fira Code', monospace; font-size: .58rem; color: var(--muted2); text-align: center; line-height: 1.6; }
-.img-ph-text code { color: var(--cyan); opacity: .7; }
-
-.pcard-icon {
-  font-size: 2.2rem;
-  margin-bottom: 1rem;
-  display: block;
-  filter: drop-shadow(0 0 12px rgba(0,212,255,.3));
-}
-
-.pcard-title {
-  font-family: 'Clash Display', sans-serif;
-  font-size: 1.3rem;
-  font-weight: 600;
-  letter-spacing: -.01em;
-  margin-bottom: .8rem;
-}
-
-.pcard-desc {
-  font-size: .875rem;
-  color: var(--muted);
-  line-height: 1.75;
-  font-weight: 300;
-  margin-bottom: 1.5rem;
-}
-
-.pcard-stack {
-  display: flex; flex-wrap: wrap; gap: .4rem;
-  margin-bottom: 2rem;
-}
-.stack-tag {
-  font-family: 'Fira Code', monospace;
-  font-size: .62rem;
-  letter-spacing: .08em;
-  padding: .2rem .55rem;
-  border: 1px solid var(--border-hover);
-  color: var(--muted);
-  background: rgba(26,37,53,.5);
-  text-transform: uppercase;
-}
-
-.pcard-footer {
-  display: flex; align-items: center; justify-content: space-between;
-}
-
-.pcard-link, .pcard-nolink {
-  font-family: 'Fira Code', monospace;
-  font-size: .7rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  text-decoration: none;
-  display: flex; align-items: center; gap: .4rem;
-  transition: gap .2s, color .2s;
-}
-.pcard-link { color: var(--cyan); }
-.pcard-link:hover { gap: .9rem; }
-.pcard-nolink { color: var(--muted2); cursor: default; }
-
-/* Screenshot placeholder */
-.screenshot {
-  margin: 1.5rem 0;
-  background: var(--surface);
-  border: 1px dashed var(--border-hover);
-  height: 160px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: .5rem;
-  position: relative;
-  overflow: hidden;
-}
-.screenshot::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(0,212,255,.04), rgba(255,107,53,.04));
-}
-.screenshot-icon { font-size: 2rem; opacity: .4; }
-.screenshot-label {
-  font-family: 'Fira Code', monospace;
-  font-size: .65rem;
-  color: var(--muted2);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-
-/* Simulated chart for powerbi */
-.chart-sim {
-  background: var(--surface);
-  border: 1px solid var(--border-hover);
-  height: 180px;
-  margin: 1.5rem 0;
-  padding: 1rem 1rem .5rem;
-  display: flex; flex-direction: column; justify-content: space-between;
-  overflow: hidden;
-}
-.chart-sim-header {
-  display: flex; justify-content: space-between;
-  font-family: 'Fira Code', monospace;
-  font-size: .6rem;
-  color: var(--muted2);
-}
-.chart-bars-wrap {
-  display: flex; align-items: flex-end; gap: 6px;
-  height: 100px;
-}
-.cbar {
-  flex: 1;
-  border-radius: 2px 2px 0 0;
-  animation: grow .8s ease forwards;
-  transform-origin: bottom;
-}
-@keyframes grow { from { transform: scaleY(0); } }
-.cbar.c { background: linear-gradient(180deg, var(--cyan), rgba(0,212,255,.3)); }
-.cbar.o { background: linear-gradient(180deg, var(--orange), rgba(255,107,53,.3)); }
-
-/* ── SKILLS ── */
-#skills .inner { padding-bottom: 7rem; }
-
-.skills-layout {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-}
-.skill-group {
-  background: var(--card);
-  padding: 2rem;
-}
-.skill-group-title {
-  font-family: 'Fira Code', monospace;
-  font-size: .7rem;
-  color: var(--cyan);
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  margin-bottom: 1.5rem;
-  display: flex; align-items: center; gap: .5rem;
-}
-.skill-group-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-.skill-pill {
-  display: inline-flex; align-items: center; gap: .4rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: .4rem .8rem;
-  margin: .25rem;
-  font-family: 'Fira Code', monospace;
-  font-size: .7rem;
-  color: var(--muted);
-  transition: border-color .2s, color .2s;
-}
-.skill-pill:hover { border-color: var(--cyan); color: var(--text); }
-.skill-pill .dot2 { width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); flex-shrink: 0; }
-
-/* ── ABOUT ── */
-#about .inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5rem;
-  align-items: center;
-}
-.about-text-block { }
-.about-text-block p {
-  font-size: .95rem;
-  color: var(--muted);
-  line-height: 1.85;
-  font-weight: 300;
-  margin-bottom: 1.2rem;
-}
-.about-text-block strong { color: var(--text); font-weight: 500; }
-
-.about-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 2rem;
-}
-.about-card-row {
-  display: flex; align-items: flex-start; gap: 1rem;
-  padding: 1.2rem 0;
-  border-bottom: 1px solid var(--border);
-}
-.about-card-row:last-child { border-bottom: none; }
-.about-card-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: .1rem; }
-.about-card-info {}
-.about-card-label {
-  font-family: 'Fira Code', monospace;
-  font-size: .65rem;
-  color: var(--muted2);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  margin-bottom: .2rem;
-}
-.about-card-val {
-  font-size: .9rem;
-  color: var(--text);
-  font-weight: 400;
-}
-
-/* ── CONTACT ── */
-#contact {
-  background: var(--surface);
-}
-#contact .inner {
-  text-align: center;
-  padding: 7rem 3rem;
-}
-.contact-big {
-  font-family: 'Clash Display', sans-serif;
-  font-size: clamp(2rem, 5vw, 4.5rem);
-  font-weight: 700;
-  letter-spacing: -.03em;
-  margin: 2rem 0;
-  color: var(--text);
-  text-decoration: none;
-  display: block;
-  transition: color .2s;
-}
-.contact-big:hover { color: var(--cyan); }
-
-.social-row {
-  display: flex; justify-content: center; gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 2.5rem;
-}
-.soc-btn {
-  font-family: 'Fira Code', monospace;
-  font-size: .72rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  padding: .7rem 1.4rem;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  text-decoration: none;
-  cursor: none;
-  transition: border-color .2s, color .2s, box-shadow .2s;
-}
-.soc-btn:hover {
-  border-color: var(--cyan);
-  color: var(--cyan);
-  box-shadow: 0 0 20px rgba(0,212,255,.1);
-}
-.soc-btn.gh:hover { border-color: #fff; color: #fff; }
-
-/* ── FOOTER ── */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 1.5rem 3rem;
-  display: flex; justify-content: space-between; align-items: center;
-  position: relative; z-index: 1;
-}
-footer span {
-  font-family: 'Fira Code', monospace;
-  font-size: .65rem;
-  color: var(--muted2);
-  letter-spacing: .08em;
-}
-.footer-status {
-  display: flex; align-items: center; gap: .5rem;
-  font-family: 'Fira Code', monospace;
-  font-size: .65rem;
-  color: var(--green);
-}
-.footer-status::before {
-  content: '';
-  width: 6px; height: 6px;
-  background: var(--green);
-  border-radius: 50%;
-  box-shadow: 0 0 6px var(--green);
-  animation: pulse 2s infinite;
-}
-
-/* ── REVEAL ── */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .65s ease, transform .65s ease; }
-.reveal.in { opacity: 1; transform: none; }
-.reveal-d1 { transition-delay: .1s; }
-.reveal-d2 { transition-delay: .2s; }
-.reveal-d3 { transition-delay: .3s; }
-.reveal-d4 { transition-delay: .4s; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  nav { padding: 1rem 1.5rem; }
-  .nav-links { display: none; }
-  .hero-layout { grid-template-columns: 1fr; }
-  .terminal { display: none; }
-  .inner { padding: 4rem 1.5rem; }
-  .projects-grid { grid-template-columns: 1fr; }
-  .skills-layout { grid-template-columns: 1fr; }
-  #about .inner { grid-template-columns: 1fr; gap: 2.5rem; }
-  footer { flex-direction: column; gap: .5rem; }
+  --bg: #05080d; --surface: #0b1017; --card: #0f1923;
+  --border: #1a2535; --border-hover: #2a3f5f;
+  --cyan: #00d4ff; --orange: #ff6b35; --green: #00e676;
+  --text: #dce8f5; --muted: #5a7a99; --muted2: #3d5570;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Cabinet Grotesk',sans-serif;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 3rem;background:rgba(5,8,13,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.nav-brand{font-family:'Fira Code',monospace;font-size:.8rem;color:var(--cyan);letter-spacing:.08em}
+.nav-brand span{color:var(--muted)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-family:'Fira Code',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--cyan)}
+.nav-dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#hero{min-height:100vh;display:flex;align-items:center;padding:8rem 3rem 4rem;position:relative;z-index:1}
+.hero-glow{position:absolute;width:700px;height:700px;background:radial-gradient(circle,rgba(0,212,255,.07) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.hero-layout{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr auto;align-items:center;gap:4rem}
+.hero-tag{font-family:'Fira Code',monospace;font-size:.72rem;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:.7rem;margin-bottom:1.8rem}
+.hero-tag::before{content:'';width:28px;height:1px;background:var(--cyan)}
+.hero-name{font-family:'Clash Display',sans-serif;font-size:clamp(3.5rem,8vw,7rem);font-weight:700;line-height:.95;letter-spacing:-.03em;margin-bottom:1rem}
+.hero-name .line2{background:linear-gradient(135deg,var(--cyan) 0%,#0099cc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-role{font-size:1rem;color:var(--muted);margin-bottom:2.5rem;line-height:1.7;max-width:480px;font-weight:300}
+.hero-role strong{color:var(--text);font-weight:500}
+.hero-cta{display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 2rem;background:transparent;border:1px solid var(--cyan);color:var(--cyan);font-family:'Fira Code',monospace;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:background .2s,color .2s,box-shadow .2s}
+.hero-cta:hover{background:var(--cyan);color:#000;box-shadow:0 0 30px rgba(0,212,255,.3)}
+.terminal{background:var(--card);border:1px solid var(--border);padding:1.5rem;width:300px;flex-shrink:0}
+.terminal-bar{display:flex;gap:.4rem;margin-bottom:1.2rem}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.terminal-line{font-family:'Fira Code',monospace;font-size:.72rem;line-height:1.9;color:var(--muted)}
+.terminal-line .prompt{color:var(--cyan)}.terminal-line .val{color:var(--green)}.terminal-line .key{color:var(--orange)}
+.blink{display:inline-block;width:8px;height:1em;background:var(--cyan);animation:blink .9s step-end infinite;vertical-align:text-bottom}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.section{position:relative;z-index:1;border-top:1px solid var(--border)}
+.inner{max-width:1100px;margin:0 auto;padding:6rem 3rem}
+.sec-label{font-family:'Fira Code',monospace;font-size:.68rem;color:var(--cyan);letter-spacing:.25em;text-transform:uppercase;margin-bottom:.6rem}
+.sec-label::before{content:'// ';color:var(--muted2)}
+.sec-title{font-family:'Clash Display',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:600;letter-spacing:-.02em;margin-bottom:.8rem}
+.sec-sub{color:var(--muted);font-size:.95rem;font-weight:300;max-width:500px;line-height:1.7;margin-bottom:3.5rem}
+.projects-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5px;background:var(--border);border:1px solid var(--border)}
+.pcard{background:var(--card);padding:2.5rem;position:relative;overflow:hidden;transition:background .25s}
+.pcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--cyan),transparent);transform:scaleY(0);transform-origin:top;transition:transform .35s}
+.pcard:hover{background:#121e2b}.pcard:hover::before{transform:scaleY(1)}
+.pcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem}
+.pcard-num{font-family:'Fira Code',monospace;font-size:.65rem;color:var(--muted2);letter-spacing:.15em}
+.badge{font-family:'Fira Code',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .6rem;border-radius:2px}
+.badge-live{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.3)}
+.badge-preview{background:rgba(255,107,53,.1);color:var(--orange);border:1px solid rgba(255,107,53,.3)}
+.badge-wip{background:rgba(255,107,53,.12);color:var(--orange);border:1px solid rgba(255,107,53,.4);animation:wip-pulse 2s ease-in-out infinite}
+@keyframes wip-pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.pcard-icon{font-size:2.2rem;margin-bottom:1rem;display:block}
+.pcard-title{font-family:'Clash Display',sans-serif;font-size:1.3rem;font-weight:600;letter-spacing:-.01em;margin-bottom:.8rem}
+.pcard-desc{font-size:.875rem;color:var(--muted);line-height:1.75;font-weight:300;margin-bottom:1.5rem}
+.pcard-stack{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:2rem}
+.stack-tag{font-family:'Fira Code',monospace;font-size:.62rem;letter-spacing:.08em;padding:.2rem .55rem;border:1px solid var(--border-hover);color:var(--muted);background:rgba(26,37,53,.5);text-transform:uppercase}
+.pcard-footer{display:flex;align-items:center;justify-content:space-between}
+.pcard-link{font-family:'Fira Code',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--cyan);display:flex;align-items:center;gap:.4rem;transition:gap .2s}
+.pcard-link:hover{gap:.9rem}
+.pcard-nolink{font-family:'Fira Code',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2)}
+.wip-bar{margin-bottom:1.2rem}
+.wip-label{display:flex;justify-content:space-between;font-family:'Fira Code',monospace;font-size:.65rem;color:var(--muted);margin-bottom:.4rem}
+.wip-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.wip-fill{height:100%;background:linear-gradient(90deg,var(--orange),#ffaa00);border-radius:2px;width:60%}
+.screenshots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:1.2rem 0}
+.img-slot{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--surface);border:1px solid var(--border-hover)}
+.img-slot img{width:100%;height:100%;object-fit:cover;display:block}
+.img-placeholder{display:none;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;height:100%;width:100%;position:absolute;inset:0;background:var(--surface);border:1px dashed var(--border-hover)}
+.img-ph-icon{font-size:1.4rem;opacity:.4}
+.img-ph-text{font-family:'Fira Code',monospace;font-size:.58rem;color:var(--muted2);text-align:center;line-height:1.6}
+.img-ph-text code{color:var(--cyan);opacity:.7}
+.skills-layout{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.skill-group{background:var(--card);padding:2rem}
+.skill-group-title{font-family:'Fira Code',monospace;font-size:.7rem;color:var(--cyan);letter-spacing:.15em;text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+.skill-group-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.skill-pill{display:inline-flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);padding:.4rem .8rem;margin:.25rem;font-family:'Fira Code',monospace;font-size:.7rem;color:var(--muted);transition:border-color .2s,color .2s}
+.skill-pill:hover{border-color:var(--cyan);color:var(--text)}
+.dot2{width:5px;height:5px;border-radius:50%;background:var(--cyan);flex-shrink:0}
+#about .inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.about-text-block p{font-size:.95rem;color:var(--muted);line-height:1.85;font-weight:300;margin-bottom:1.2rem}
+.about-text-block strong{color:var(--text);font-weight:500}
+.about-card{background:var(--card);border:1px solid var(--border);padding:2rem}
+.about-card-row{display:flex;align-items:flex-start;gap:1rem;padding:1.2rem 0;border-bottom:1px solid var(--border)}
+.about-card-row:last-child{border-bottom:none}
+.about-card-icon{font-size:1.4rem;flex-shrink:0;margin-top:.1rem}
+.about-card-label{font-family:'Fira Code',monospace;font-size:.65rem;color:var(--muted2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.2rem}
+.about-card-val{font-size:.9rem;color:var(--text);font-weight:400}
+#contact{background:var(--surface)}
+#contact .inner{text-align:center;padding:7rem 3rem}
+.contact-big{font-family:'Clash Display',sans-serif;font-size:clamp(1.5rem,3vw,3rem);font-weight:700;letter-spacing:-.02em;color:var(--text);text-decoration:none;display:block;margin:2rem 0;transition:color .2s;word-break:break-all}
+.contact-big:hover{color:var(--cyan)}
+.social-row{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:2.5rem}
+.soc-btn{font-family:'Fira Code',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding:.7rem 1.4rem;border:1px solid var(--border);color:var(--muted);text-decoration:none;transition:border-color .2s,color .2s}
+.soc-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+footer{border-top:1px solid var(--border);padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+footer span{font-family:'Fira Code',monospace;font-size:.65rem;color:var(--muted2);letter-spacing:.08em}
+.footer-status{display:flex;align-items:center;gap:.5rem;font-family:'Fira Code',monospace;font-size:.65rem;color:var(--green)}
+.footer-status::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}
+.reveal.in{opacity:1;transform:none}
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}.reveal-d4{transition-delay:.4s}
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem}.nav-links{display:none}
+  .inner{padding:4rem 1.5rem}.hero-layout{grid-template-columns:1fr}
+  .terminal{display:none}.projects-grid{grid-template-columns:1fr}
+  .skills-layout{grid-template-columns:1fr}
+  #about .inner{grid-template-columns:1fr;gap:2.5rem}
+  footer{flex-direction:column;gap:.5rem;text-align:center}
 }
 </style>
 </head>
 <body>
 
-<div id="cur"></div>
-<div id="cur-ring"></div>
-
-<!-- NAV -->
 <nav>
   <div class="nav-brand">// <span>ange1501zinta</span>.github.io</div>
   <ul class="nav-links">
     <li><a href="#projects">projets</a></li>
     <li><a href="#skills">stack</a></li>
-    <li><a href="#about">à propos</a></li>
+    <li><a href="#about">a propos</a></li>
     <li><a href="#contact">contact</a></li>
   </ul>
-  <div class="nav-dot" title="Disponible"></div>
+  <div class="nav-dot"></div>
 </nav>
 
-<!-- HERO -->
 <section id="hero">
   <div class="hero-glow"></div>
   <div class="hero-layout">
     <div>
       <div class="hero-tag">Data Analyst & Data Scientist</div>
-      <h1 class="hero-name">
-        Zinta<br><span class="line2">Arthur</span>
-      </h1>
-      <p class="hero-role">
-        Je construis des <strong>modèles prédictifs</strong>, explore des données complexes et les transforme en <strong>insights visuels</strong> qui font sens.
-      </p>
-      <a href="#projects" class="hero-cta">
-        <span>↓</span> Voir mes projets
-      </a>
+      <h1 class="hero-name">Zinta<br><span class="line2">Arthur</span></h1>
+      <p class="hero-role">Je construis des <strong>modeles predictifs</strong>, explore des donnees complexes et les transforme en <strong>insights visuels</strong> qui font sens.</p>
+      <a href="#projects" class="hero-cta">Voir mes projets</a>
     </div>
-
-    <!-- Terminal -->
     <div class="terminal">
-      <div class="terminal-bar">
-        <div class="dot r"></div>
-        <div class="dot y"></div>
-        <div class="dot g"></div>
-      </div>
+      <div class="terminal-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
       <div class="terminal-line"><span class="prompt">$</span> python profile.py</div>
       <div class="terminal-line">&nbsp;</div>
       <div class="terminal-line"><span class="key">name</span>: <span class="val">"Zinta Arthur"</span></div>
@@ -670,153 +162,90 @@ footer span {
   </div>
 </section>
 
-<!-- PROJECTS -->
 <section class="section" id="projects">
   <div class="inner">
     <div class="sec-label">Projets</div>
-    <h2 class="sec-title">Ce que j'ai réalisé</h2>
-    <p class="sec-sub">Projets académiques et personnels — de l'exploration à la mise en production.</p>
-
+    <h2 class="sec-title">Ce que j'ai realise</h2>
+    <p class="sec-sub">Projets academiques et personnels - de l'exploration a la mise en production.</p>
     <div class="projects-grid">
 
-      <!-- P1 : Détection incendies -->
       <div class="pcard reveal reveal-d1">
-        <div class="pcard-top">
-          <span class="pcard-num">01</span>
-          <span class="badge badge-live">● Live</span>
-        </div>
-        <span class="pcard-icon">🔥</span>
-        <div class="pcard-title">Détection d'incendies</div>
-        <p class="pcard-desc">
-          Modèle de vision par ordinateur basé sur le Deep Learning pour détecter automatiquement les départs de feu à partir d'images. Entraîné sur un dataset d'images labelisées, avec augmentation de données et optimisation des hyperparamètres.
-        </p>
+        <div class="pcard-top"><span class="pcard-num">01</span><span class="badge badge-live">Live</span></div>
+        <span class="pcard-icon">&#128293;</span>
+        <div class="pcard-title">Detection d'incendies</div>
+        <p class="pcard-desc">Modele de vision par ordinateur base sur le Deep Learning pour detecter automatiquement les departs de feu. Entraine sur un dataset labelise avec augmentation de donnees.</p>
         <div class="pcard-stack">
-          <span class="stack-tag">Python</span>
-          <span class="stack-tag">TensorFlow</span>
-          <span class="stack-tag">CNN</span>
-          <span class="stack-tag">OpenCV</span>
-          <span class="stack-tag">Keras</span>
+          <span class="stack-tag">Python</span><span class="stack-tag">TensorFlow</span><span class="stack-tag">CNN</span><span class="stack-tag">OpenCV</span><span class="stack-tag">Keras</span>
         </div>
         <div class="pcard-footer">
-          <a href="https://ange1501zinta.github.io/detect_incendie-app/" class="pcard-link" target="_blank">Voir la démo →</a>
+          <a href="https://ange1501zinta.github.io/detect_incendie-app/" class="pcard-link" target="_blank">Voir la demo &rarr;</a>
         </div>
       </div>
 
-      <!-- P2 : Hypertension -->
       <div class="pcard reveal reveal-d2">
-        <div class="pcard-top">
-          <span class="pcard-num">02</span>
-          <span class="badge badge-live">● Live</span>
-        </div>
-        <span class="pcard-icon">💊</span>
-        <div class="pcard-title">Prédiction du risque d'hypertension</div>
-        <p class="pcard-desc">
-          Modèle de classification supervisée pour prédire le risque d'hypertension artérielle à partir de données médicales. Développement, évaluation et optimisation du modèle, puis déploiement sous forme d'API avec Flask pour une intégration web.
-        </p>
+        <div class="pcard-top"><span class="pcard-num">02</span><span class="badge badge-live">Live</span></div>
+        <span class="pcard-icon">&#128138;</span>
+        <div class="pcard-title">Prediction du risque d'hypertension</div>
+        <p class="pcard-desc">Modele de classification supervisee pour predire le risque d'hypertension. Developpement, evaluation, optimisation et deploiement via API Flask.</p>
         <div class="pcard-stack">
-          <span class="stack-tag">Python</span>
-          <span class="stack-tag">Scikit-learn</span>
-          <span class="stack-tag">XGBoost</span>
-          <span class="stack-tag">Flask</span>
-          <span class="stack-tag">Pandas</span>
+          <span class="stack-tag">Python</span><span class="stack-tag">Scikit-learn</span><span class="stack-tag">XGBoost</span><span class="stack-tag">Flask</span><span class="stack-tag">Pandas</span>
         </div>
         <div class="pcard-footer">
-          <a href="https://ange1501zinta.github.io/hypertension-app/" class="pcard-link" target="_blank">Voir la démo →</a>
+          <a href="https://ange1501zinta.github.io/hypertension-app/" class="pcard-link" target="_blank">Voir la demo &rarr;</a>
         </div>
       </div>
 
-      <!-- P3 : NLP Sentiments -->
       <div class="pcard reveal reveal-d3">
-        <div class="pcard-top">
-          <span class="pcard-num">03</span>
-          <span class="badge badge-wip">⚙ En cours</span>
-        </div>
-        <span class="pcard-icon">💬</span>
+        <div class="pcard-top"><span class="pcard-num">03</span><span class="badge badge-wip">En cours</span></div>
+        <span class="pcard-icon">&#128172;</span>
         <div class="pcard-title">Analyse de sentiments — NLP</div>
         <div class="wip-bar">
-          <div class="wip-label">
-            <span>Progression</span>
-            <span>60%</span>
-          </div>
-          <div class="wip-track"><div class="wip-fill" style="width:60%"></div></div>
+          <div class="wip-label"><span>Progression</span><span>60%</span></div>
+          <div class="wip-track"><div class="wip-fill"></div></div>
         </div>
-        <p class="pcard-desc">
-          Pipeline de traitement du langage naturel pour classifier les avis clients en positif, négatif ou neutre. Prétraitement textuel complet, vectorisation TF-IDF et modèles de classification avec fine-tuning. <span style="color:var(--orange);font-size:.8rem;">— Projet en cours de développement.</span>
-        </p>
+        <p class="pcard-desc">Pipeline NLP pour classifier les avis en positif, negatif ou neutre. Pretraitement textuel, vectorisation TF-IDF et modeles de classification.</p>
         <div class="pcard-stack">
-          <span class="stack-tag">Python</span>
-          <span class="stack-tag">NLTK</span>
-          <span class="stack-tag">spaCy</span>
-          <span class="stack-tag">TF-IDF</span>
-          <span class="stack-tag">Transformers</span>
+          <span class="stack-tag">Python</span><span class="stack-tag">NLTK</span><span class="stack-tag">spaCy</span><span class="stack-tag">TF-IDF</span><span class="stack-tag">Transformers</span>
         </div>
         <div class="pcard-footer">
-          <span class="pcard-nolink" style="color:var(--orange);">⚙ Bientôt disponible</span>
+          <span class="pcard-nolink" style="color:var(--orange)">Bientot disponible</span>
         </div>
       </div>
 
-      <!-- P4 : Power BI -->
       <div class="pcard reveal reveal-d4">
-        <div class="pcard-top">
-          <span class="pcard-num">04</span>
-          <span class="badge badge-preview">◎ Aperçu</span>
-        </div>
-        <span class="pcard-icon">📊</span>
+        <div class="pcard-top"><span class="pcard-num">04</span><span class="badge badge-preview">Apercu</span></div>
+        <span class="pcard-icon">&#128202;</span>
         <div class="pcard-title">Dashboard analytique — Power BI</div>
-        <p class="pcard-desc">
-          Dashboard interactif de visualisation de données avec KPIs dynamiques, filtres croisés et storytelling visuel. Non publié en ligne (limite du mode gratuit Power BI) — captures d'écran disponibles.
-        </p>
-
-        <!-- Screenshots Power BI -->
+        <p class="pcard-desc">Dashboard interactif avec KPIs dynamiques, filtres croises et storytelling visuel. Non publie en ligne (mode gratuit Power BI).</p>
         <div class="screenshots-grid">
           <div class="img-slot">
-            <img src="images/powerbi-1.png" alt="Dashboard Power BI - Vue principale"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-placeholder">
-              <span class="img-ph-icon">🖼️</span>
-              <span class="img-ph-text">Ta capture ici<br><code>images/powerbi-1.png</code></span>
-            </div>
+            <img src="images/powerbi-1.png" alt="Power BI 1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-placeholder"><span class="img-ph-icon">&#128444;</span><span class="img-ph-text">Ta capture<br><code>images/powerbi-1.png</code></span></div>
           </div>
           <div class="img-slot">
-            <img src="images/powerbi-2.png" alt="Dashboard Power BI - Détail"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-placeholder">
-              <span class="img-ph-icon">🖼️</span>
-              <span class="img-ph-text">Ta capture ici<br><code>images/powerbi-2.png</code></span>
-            </div>
+            <img src="images/powerbi-2.png" alt="Power BI 2" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-placeholder"><span class="img-ph-icon">&#128444;</span><span class="img-ph-text">Ta capture<br><code>images/powerbi-2.png</code></span></div>
           </div>
           <div class="img-slot">
-            <img src="images/powerbi-3.png" alt="Dashboard Power BI - KPIs"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-placeholder">
-              <span class="img-ph-icon">🖼️</span>
-              <span class="img-ph-text">Ta capture ici<br><code>images/powerbi-3.png</code></span>
-            </div>
+            <img src="images/powerbi-3.png" alt="Power BI 3" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-placeholder"><span class="img-ph-icon">&#128444;</span><span class="img-ph-text">Ta capture<br><code>images/powerbi-3.png</code></span></div>
           </div>
         </div>
-
         <div class="pcard-stack">
-          <span class="stack-tag">Power BI</span>
-          <span class="stack-tag">DAX</span>
-          <span class="stack-tag">Data Modeling</span>
-          <span class="stack-tag">ETL</span>
+          <span class="stack-tag">Power BI</span><span class="stack-tag">DAX</span><span class="stack-tag">Data Modeling</span><span class="stack-tag">MySQL</span>
         </div>
-        <div class="pcard-footer">
-          <span class="pcard-nolink">📷 Captures disponibles</span>
-        </div>
+        <div class="pcard-footer"><span class="pcard-nolink">Captures d'ecran</span></div>
       </div>
 
     </div>
   </div>
 </section>
 
-<!-- SKILLS -->
 <section class="section" id="skills">
   <div class="inner">
     <div class="sec-label">Stack technique</div>
     <h2 class="sec-title">Mes outils</h2>
-    <p class="sec-sub">Les technologies que j'utilise au quotidien pour analyser, modéliser et visualiser.</p>
-
+    <p class="sec-sub">Les technologies que j'utilise pour analyser, modeliser et visualiser.</p>
     <div class="skills-layout">
       <div class="skill-group reveal">
         <div class="skill-group-title">Langages</div>
@@ -831,7 +260,7 @@ footer span {
         <span class="skill-pill"><span class="dot2"></span>XGBoost</span>
         <span class="skill-pill"><span class="dot2"></span>TensorFlow</span>
         <span class="skill-pill"><span class="dot2"></span>Keras</span>
-        <span class="skill-pill"><span class="dot2"></span>SHAP</span>
+        <span class="skill-pill"><span class="dot2"></span>Flask</span>
       </div>
       <div class="skill-group reveal reveal-d2">
         <div class="skill-group-title">Data & Viz</div>
@@ -839,52 +268,32 @@ footer span {
         <span class="skill-pill"><span class="dot2"></span>NumPy</span>
         <span class="skill-pill"><span class="dot2"></span>Power BI</span>
         <span class="skill-pill"><span class="dot2"></span>Matplotlib</span>
-        <span class="skill-pill"><span class="dot2"></span>Flask</span>
         <span class="skill-pill"><span class="dot2"></span>MySQL</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ABOUT -->
 <section class="section" id="about">
   <div class="inner">
     <div class="about-text-block reveal">
-      <div class="sec-label">À propos</div>
+      <div class="sec-label">A propos</div>
       <h2 class="sec-title">Qui suis-je ?</h2>
-      <p>
-        Passionné d'IA et d'analyse de données, je m'appelle <strong>Zinta Arthur Ange Emmanuel</strong>. J'ai développé des compétences en data analysis, machine learning et deep learning à travers des projets personnels et académiques concrets.
-      </p>
-      <p>
-        Motivé pour apprendre et contribuer, je transforme les données en <strong>insights actionnables</strong> pour l'innovation et les décisions stratégiques — de l'exploration des données jusqu'au déploiement de modèles via API.
-      </p>
+      <p>Passionne d'IA et d'analyse de donnees, je m'appelle <strong>Zinta Arthur Ange Emmanuel</strong>. J'ai developpe des competences en data analysis, machine learning et deep learning a travers des projets personnels et academiques concrets.</p>
+      <p>Motive pour apprendre et contribuer, je transforme les donnees en <strong>insights actionnables</strong> — de l'exploration jusqu'au deploiement de modeles via API.</p>
     </div>
     <div class="about-card reveal reveal-d2">
       <div class="about-card-row">
-        <span class="about-card-icon">🎓</span>
-        <div class="about-card-info">
-          <div class="about-card-label">Formation</div>
-          <div class="about-card-val">Master Data Science — Université Félix-Houphouët-Boigny</div>
-        </div>
-      </div>
-      <div class="about-card-row">
-        <span class="about-card-icon">📍</span>
+        <span class="about-card-icon">&#128205;</span>
         <div class="about-card-info">
           <div class="about-card-label">Localisation</div>
-          <div class="about-card-val">Abidjan, Côte d'Ivoire</div>
+          <div class="about-card-val">Abidjan, Cote d'Ivoire</div>
         </div>
       </div>
       <div class="about-card-row">
-        <span class="about-card-icon">🚀</span>
+        <span class="about-card-icon">&#128230;</span>
         <div class="about-card-info">
-          <div class="about-card-label">Statut</div>
-          <div class="about-card-val" style="color:var(--green)">Disponible — Ouvert aux opportunités</div>
-        </div>
-      </div>
-      <div class="about-card-row">
-        <span class="about-card-icon">📦</span>
-        <div class="about-card-info">
-          <div class="about-card-label">Portfolio hébergé sur</div>
+          <div class="about-card-label">Portfolio heberge sur</div>
           <div class="about-card-val">GitHub Pages — ange1501zinta.github.io</div>
         </div>
       </div>
@@ -892,45 +301,29 @@ footer span {
   </div>
 </section>
 
-<!-- CONTACT -->
 <section class="section" id="contact">
   <div class="inner">
     <div class="sec-label">Contact</div>
     <h2 class="sec-title">Travaillons ensemble</h2>
-    <p class="sec-sub" style="margin: 0 auto; text-align:center;">
-      Un projet, une question, une opportunité ? Je suis disponible.
-    </p>
+    <p class="sec-sub" style="margin:0 auto;text-align:center">Un projet, une question, une opportunite ? Je suis disponible.</p>
     <a href="mailto:angeartthurzinta@gmail.com" class="contact-big">angeartthurzinta@gmail.com</a>
     <div class="social-row">
-      <a href="https://github.com/ange1501zinta" class="soc-btn gh" target="_blank">GitHub</a>
+      <a href="https://github.com/ange1501zinta" class="soc-btn" target="_blank">GitHub</a>
       <a href="https://www.linkedin.com/in/arthur-zinta-20736630b/" class="soc-btn" target="_blank">LinkedIn</a>
     </div>
   </div>
 </section>
 
 <footer>
-  <span>© 2025 Zinta Arthur — Portfolio Data Science</span>
+  <span>2025 Zinta Arthur — Portfolio Data Science</span>
   <div class="footer-status">Disponible pour collaborer</div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// Cursor
-const cur = document.getElementById('cur');
-const ring = document.getElementById('cur-ring');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove', e=>{
-  mx=e.clientX; my=e.clientY;
-  cur.style.cssText += `left:${mx-4}px;top:${my-4}px;`;
-});
-(function animR(){
-  rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
-  ring.style.cssText += `left:${rx-16}px;top:${ry-16}px;`;
-  requestAnimationFrame(animR);
-})();
-document.querySelectorAll('a,button').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cur.style.transform='scale(3)';ring.style.opacity='0';});
-  el.addEventListener('mouseleave',()=>{cur.style.transform='scale(1)';ring.style.opacity='1';});
-});
-
-// Scroll reveal
-cons
+<script>
+var obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+</script>
+</body>
+</html>
